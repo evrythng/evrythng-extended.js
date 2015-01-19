@@ -47,7 +47,7 @@ documentation on [EVRYTHNG's Developer Portal](https://dashboard.evrythng.com/de
 var EVT = require('evrythng-extended');
 
 // Initialise Account Scope
-// **DO NOT include your API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
+// **DO NOT include your Account API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
 var account = new EVT.Account(ACCOUNT_API_KEY);
 
 // Initialise Application Scope, passing the Sccount Scope as parent
@@ -66,7 +66,7 @@ All features of **evrythng.js** are available without changes.
 
 Features available only in **evrythng-extended.js**:
 1. Work in account context:
-```
+```javascript
 // Initialise Account Scope using account API key
 // **DO NOT include your API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
 var account = new EVT.Account(ACCOUNT_API_KEY);
@@ -81,7 +81,7 @@ account.thng().read().then(function(thngs){
 ```
 
 2. Use an app as operator 
-```
+```javascript
 // Initialize App Scope using application API key and pass the account as parent scope
 var app = new EVT.App(APP_API_KEY, account);
 
