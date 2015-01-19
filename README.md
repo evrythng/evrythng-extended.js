@@ -1,7 +1,7 @@
 # [EVRYTHNG](https://www.evrythng.com) Client JavaScript SDK
 
 
-**evrythng-extended.js** is the extended version of a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API. It's primarily meant to be used in Node.js apps, but thanks to  [UMD](https://github.com/umdjs/umd) compatibility it can be used for your Web (mobile, desktop or hybrid) apps too.
+**evrythng-extended.js** is the extended version of a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API. It's primarily meant to be used in **Node.js** apps, but thanks to  [UMD](https://github.com/umdjs/umd) compatibility it can be used for your Web (mobile, desktop or hybrid) apps too.
 
 ## Installation
 
