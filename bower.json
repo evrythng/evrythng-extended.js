@@ -1,0 +1,23 @@
+{
+  "name": "evrythng-extended",
+  "version": "2.1.0",
+  "main": "dist/evrythng-extended.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tools",
+    "lib",
+    "src",
+    "*.html",
+    "build.txt",
+    "DEVELOPMENT.md",
+    "karma*.js",
+    "Gruntfile.js"
+  ],
+  "license": "Apache-2.0",
+  "endpoint": "https://github.com/evrythng/evrythng-extended.js.git",
+  "dependencies": {},
+  "private": true
+}

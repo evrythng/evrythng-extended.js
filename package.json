@@ -1,0 +1,33 @@
+{
+  "name": "evrythng-extended",
+  "version": "2.1.0",
+  "main": "dist/evrythng-extended.js",
+  "description": "Javascript SDK to communicate with EVRYTHNG REST API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evrythng/evrythng-extended.js.git"
+  },
+  "keywords": [
+    "evrythng",
+    "sdk",
+    "library",
+    "thng",
+    "thngs",
+    "evt",
+    "iot",
+    "internet of things",
+    "wot",
+    "web of things"
+  ],
+  "author": "EVRYTHNG Ltd.",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://github.com/evrythng/evrythng-extended.js/blob/master/LICENSE"
+    }
+  ],
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "w3c-xmlhttprequest": "ykzts/node-xmlhttprequest"
+  }
+}
