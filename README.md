@@ -16,21 +16,21 @@
 Not recommended - web apps should not need the extended features and only use the basic version of [**evrythng.js**](https://github.com/evrythng/evrythng.js).
 If you know what you're doing, you can install the NPM package as described above, or include the script from our CDN in your HTML file using:
                                                        
-   <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-2.1.0.min.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-2.1.0.min.js"></script>
 
 Or always get the last stable release:
 
-   <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
-   <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
    
 For HTTPs you'll have to use:
 
-   <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-2.1.0.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-2.1.0.min.js"></script>
 
 respectively
 
-   <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
-   
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
+
 
 ## Usage
 
