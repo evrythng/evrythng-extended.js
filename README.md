@@ -1,7 +1,7 @@
-# [EVRYTHNG](https://www.evrythng.com) Extended JS SDK for Node.js
+# [EVRYTHNG](https://www.evrythng.com) Client JavaScript SDK
 
 
-**evrythng-extended.js** is the extended version of a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API. It's primarily meant to be used in **Node.js** apps, but thanks to  [UMD](https://github.com/umdjs/umd) compatibility it can be used for your Web (mobile, desktop or hybrid) apps too.
+**evrythng-extended.js** is the extended version of a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API. It's primarily meant to be used in Node.js apps, but thanks to  [UMD](https://github.com/umdjs/umd) compatibility it can be used for your Web (mobile, desktop or hybrid) apps too.
 
 ## Installation
 
@@ -30,7 +30,7 @@ For HTTPs you'll have to use:
 respectively
 
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
-
+   
 
 ## Usage
 
@@ -47,7 +47,7 @@ documentation on [EVRYTHNG's Developer Portal](https://dashboard.evrythng.com/de
 var EVT = require('evrythng-extended');
 
 // Initialise Account Scope
-// **DO NOT include your Account API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
+// **DO NOT include your API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
 var account = new EVT.Account(ACCOUNT_API_KEY);
 
 // Initialise Application Scope, passing the Sccount Scope as parent
@@ -66,7 +66,7 @@ All features of **evrythng.js** are available without changes.
 
 Features available only in **evrythng-extended.js**:
 1. Work in account context:
-```javascript
+```
 // Initialise Account Scope using account API key
 // **DO NOT include your API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
 var account = new EVT.Account(ACCOUNT_API_KEY);
@@ -81,7 +81,7 @@ account.thng().read().then(function(thngs){
 ```
 
 2. Use an app as operator 
-```javascript
+```
 // Initialize App Scope using application API key and pass the account as parent scope
 var app = new EVT.App(APP_API_KEY, account);
 
