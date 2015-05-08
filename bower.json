@@ -1,6 +1,6 @@
 {
   "name": "evrythng-extended",
-  "version": "2.1.2",
+  "version": "3.0.1",
   "main": "dist/evrythng-extended.js",
   "ignore": [
     "**/.*",
@@ -18,6 +18,5 @@
   ],
   "license": "Apache-2.0",
   "endpoint": "https://github.com/evrythng/evrythng-extended.js.git",
-  "dependencies": {},
-  "private": true
+  "dependencies": {}
 }

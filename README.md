@@ -1,40 +1,48 @@
-# [EVRYTHNG](https://www.evrythng.com) Client JavaScript SDK
+# [EVRYTHNG](https://www.evrythng.com) Extended JS SDK for Node.js
 
+**evrythng-extended.js** is the extended version of a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API.
+We provide two environment-specific versions: AMD and CommonJS to utilise the best of both browser and Node.js.
 
-**evrythng-extended.js** is the extended version of a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API. It's primarily meant to be used in Node.js apps, but thanks to  [UMD](https://github.com/umdjs/umd) compatibility it can be used for your Web (mobile, desktop or hybrid) apps too.
 
 ## Installation
 
+**Note**: `evrythng-extended.js` uses [Promises/A+](https://promisesaplus.com/). Node.js in versions before 0.12 does not support that natively and support in 0.12 is buggy; to deal with this, we use the [Native Promise Only](https://github.com/getify/native-promise-only) polyfill.
+
+**DO NOT include your Operator API Key in any public code**, this includes committing to any public repositories (GitHub, BitBucket, etc.)! This is very important especially when using evrythng-extended.js in a web app.
+
 ### Node.js
 
-**evrythng-extended.js** is available as an NPM package. Install it using:
+**evrythng-extended.js** is available as a NPM package. Install it using:
 
     npm install evrythng-extended
 
-### Browser
+### Browsers
 
-Not recommended - web apps should not need the extended features and only use the basic version of [**evrythng.js**](https://github.com/evrythng/evrythng.js).
-If you know what you're doing, you can install the NPM package as described above, or include the script from our CDN in your HTML file using:
-                                                       
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-2.1.0.min.js"></script>
+**Note**: most web apps will not need the extended features and should only use the basic version of [**evrythng.js**](https://github.com/evrythng/evrythng.js).
 
-Or always get the last stable release:
+#### With [Bower](http://bower.io/)
 
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
-   
-For HTTPs you'll have to use:
+The Bower package includes the AMD build of evrythng-extended.js. You can either load it directly or use a loader like [require.js](http://requirejs.org/).
 
-    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-2.1.0.min.js"></script>
+    bower install evrythng-extended
+    
+Then just load the script in your page:
 
-respectively
+    <script src="bower_components/evrythng-extended/dist/evrythng-extended.js"></script>
 
-    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
-   
+Once the script loads, `EVT` becomes available as a browser global. 
+
+If you want to automate this, there are several [Grunt](http://gruntjs.com/) plugins which you may find useful:
+
+* [grunt-wiredep](https://github.com/stephenplusplus/grunt-wiredep) finds your components and injects them directly into the HTML file you specify.
+* [grunt-bower-concat](https://github.com/sapegin/grunt-bower-concat) does automatic concatenation of installed Bower components (JS and/or CSS) in the right order.
+
+Or if you prefer [Gulp](http://gulpjs.com/):
+
+* [main-bower-files](https://github.com/ck86/main-bower-files) (works with Grunt too)
+* [gulp-bower-src](https://github.com/bclozel/gulp-bower-src) - `gulp.src` files from your bower components directory, using your bower.json configuration file.
 
 ## Usage
-
-**evrythng.js** uses UMD, which makes it available in every environment running Javascript.
 
 For advanced usage and options, see the [Documentation section](#documentation) below and the API 
 documentation on [EVRYTHNG's Developer Portal](https://dashboard.evrythng.com/developers). 
@@ -43,36 +51,64 @@ documentation on [EVRYTHNG's Developer Portal](https://dashboard.evrythng.com/de
 
 ### Node.js
 
-```javascript
+```javascript 
 var EVT = require('evrythng-extended');
 
-// Initialise Account Scope
-// **DO NOT include your API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
-var account = new EVT.Account(ACCOUNT_API_KEY);
+// Initialise Operator Scope
+// **DO NOT include your Operator API Key in any public code**, this includes committing to any public repositories (GitHub, BitBucket, etc.)!
+var operator = new EVT.Operator(OPERATOR_API_KEY);
 
-// Initialise Application Scope, passing the Sccount Scope as parent
-var app = new EVT.App('appApiKey', account);
+// Initialise Application Scope, passing the Operator Scope as parent
+var app = new EVT.App('appApiKey', operator);
 ...
 ```
 
-### Browser
+### Browsers
 
-Not recommended - web apps should not need the extended features and only use the basic version of [**evrythng.js**](https://github.com/evrythng/evrythng.js).
-If you know what you're doing, please refer to [**evrythng.js** documentation](https://github.com/evrythng/evrythng.js#browser) for details.
+**Note**: most web apps will not need the extended features and should only use the basic version of [**evrythng.js**](https://github.com/evrythng/evrythng.js).
+
+### With RequireJS (AMD)
+
+```javascript
+var bowerPath = '../bower_components/'; // replace with path to your local bower directory
+requirejs.config({
+    paths: {
+        evrythng: bowerPath + 'evrythng-extended/dist/evrythng-extended'
+    }
+});
+    
+require(['evrythng'], function (EVT) {
+
+  var app = new EVT.App('apiKey');
+  ...
+
+});
+```
+
+### Plain Javascript
+
+If you aren't using any of the above script loading mechanisms, the EVT module is available
+as a browser global:
+
+```javascript
+var app = new EVT.App('apiKey');
+...
+```
 
 ## What's included
 
 All features of **evrythng.js** are available without changes.
 
 Features available only in **evrythng-extended.js**:
-1. Work in account context:
-```
-// Initialise Account Scope using account API key
-// **DO NOT include your API Key in any public code**, that includes committing to any public repositories (GitHub, BitBucket, etc.)!
-var account = new EVT.Account(ACCOUNT_API_KEY);
+1. Work in account context (as an operator):
+```javascript
+// Initialise Operator Scope using Operator API key
+//    **DO NOT include your Operator API Key in any public code**,
+//    this includes committing to any public repositories (GitHub, BitBucket, etc.)!
+var operator = new EVT.Operator(OPERATOR_API_KEY);
 
 // Read all Thngs in your account
-account.thng().read().then(function(thngs){
+operator.thng().read().then(function(thngs){
   console.log(thngs);
   
   // Delete a Thng
@@ -81,9 +117,9 @@ account.thng().read().then(function(thngs){
 ```
 
 2. Use an app as operator 
-```
-// Initialize App Scope using application API key and pass the account as parent scope
-var app = new EVT.App(APP_API_KEY, account);
+```javascript
+// Initialize App Scope using application API key and pass the operator as parent scope
+var app = new EVT.App(APP_API_KEY, operator);
 
 // Use as you would with `evrythng.js`
 ...
