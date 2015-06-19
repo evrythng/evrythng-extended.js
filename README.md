@@ -6,9 +6,9 @@ We provide two environment-specific versions: AMD and CommonJS to utilise the be
 
 ## Installation
 
-**Note**: `evrythng-extended.js` uses [Promises/A+](https://promisesaplus.com/). Node.js in versions before 0.12 does not support that natively and support in 0.12 is buggy; to deal with this, we use the [Native Promise Only](https://github.com/getify/native-promise-only) polyfill.
+**Note**: `evrythng-extended.js` uses [Promises/A+](https://promisesaplus.com/). Node.js in versions before 0.12 does not support that natively and support in 0.12 is buggy; to deal with this, we use the [Native Promise Only](https://github.com/getify/native-promise-only) polyfill internally.
 
-**DO NOT include your Operator API Key in any public code**, this includes committing to any public repositories (GitHub, BitBucket, etc.)! This is very important especially when using evrythng-extended.js in a web app.
+**Warning: DO NOT include your Operator API Key in any public code**, this includes committing to any public repositories (GitHub, BitBucket, etc.)! This is very important especially when using evrythng-extended.js in a web app.
 
 ### Node.js
 
