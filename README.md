@@ -1,134 +1,189 @@
-# [EVRYTHNG](https://www.evrythng.com) Extended JS SDK for Node.js
+# [EVRYTHNG](https://www.evrythng.com) Client Javascript SDK (Extended)
 
-**evrythng-extended.js** is the extended version of a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API.
-We provide two environment-specific versions: AMD and CommonJS to utilise the best of both browser and Node.js.
+**evrythng-extended.js** is an extended version of [*evrythng.js*](https://github.com/evrythng/evrythng.js)
+that adds Operator administrative capabilities (read about
+[Scope and Permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#operator-permissions)). This means you need
+your Account Operator API key, which you can find in your [Account settings](https://dashboard.evrythng.com/account) page.
 
+**evrythng.js** can be used both in Web applications (Browser) and embedded/server applications using Node.js. The
+difference being the transport layer - Browser's XHR vs Node's HTTP.
+
+> **evrythng-extended.js** is intended for administrative operations only - the same sort of actions you would do on 
+the [EVRYTHNG Dashboard](https://dashboard.evrythng.com). Be sure to **never** include your EVRYTHNG **Operator API key** 
+in any public source code (read more about [Scope Permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#permissions)).
+You can use it in a server-side application or if you dynamically retrieve the Operator API key from a server call.
+
+> See [Related Tools](#related-tools) below for other usages.
 
 ## Installation
 
-**Note**: `evrythng-extended.js` uses [Promises/A+](https://promisesaplus.com/). Node.js in versions before 0.12 does not support that natively and support in 0.12 is buggy; to deal with this, we use the [Native Promise Only](https://github.com/getify/native-promise-only) polyfill internally.
-
-**Warning: DO NOT include your Operator API Key in any public code**, this includes committing to any public repositories (GitHub, BitBucket, etc.)! This is very important especially when using evrythng-extended.js in a web app.
-
 ### Node.js
 
-**evrythng-extended.js** is available as a NPM package. Install it using:
-
-    npm install evrythng-extended
+    npm install evrythng-extended --save-dev
 
 ### Browsers
 
-**Note**: most web apps will not need the extended features and should only use the basic version of [**evrythng.js**](https://github.com/evrythng/evrythng.js).
+**Note**: Most Web Applications will not need the extended features and should use the core version of 
+[*evrythng.js*](https://github.com/evrythng/evrythng.js) instead.
 
-#### With [Bower](http://bower.io/)
+##### With [Bower](http://bower.io/)
 
-The Bower package includes the AMD build of evrythng-extended.js. You can either load it directly or use a loader like [require.js](http://requirejs.org/).
-
-    bower install evrythng-extended
+    bower install evrythng-extended --save-dev
     
-Then just load the script in your page:
+The Bower package is [AMD](http://requirejs.org/docs/whyamd.html)-compatible. This means you can load 
+it asynchronously using tools like [Require.js](http://requirejs.org/) or simply dropping the script tag 
+into your HTML page:
 
     <script src="bower_components/evrythng-extended/dist/evrythng-extended.js"></script>
 
-Once the script loads, `EVT` becomes available as a browser global. 
+See [Usage](#usage) below for more details.
 
-If you want to automate this, there are several [Grunt](http://gruntjs.com/) plugins which you may find useful:
+##### Load from CDN
 
-* [grunt-wiredep](https://github.com/stephenplusplus/grunt-wiredep) finds your components and injects them directly into the HTML file you specify.
-* [grunt-bower-concat](https://github.com/sapegin/grunt-bower-concat) does automatic concatenation of installed Bower components (JS and/or CSS) in the right order.
+Add the script tag into your HTML page:
 
-Or if you prefer [Gulp](http://gulpjs.com/):
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-3.1.2.min.js"></script>
+ 
+Or always get the last release:
 
-* [main-bower-files](https://github.com/ck86/main-bower-files) (works with Grunt too)
-* [gulp-bower-src](https://github.com/bclozel/gulp-bower-src) - `gulp.src` files from your bower components directory, using your bower.json configuration file.
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
+    
+For HTTPS you need to use:
+
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-3.1.2.min.js"></script>
+
+Respectively:
+
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
 
 ## Usage
 
-For advanced usage and options, see the [Documentation section](#documentation) below and the API 
-documentation on [EVRYTHNG's Developer Portal](https://dashboard.evrythng.com/developers). 
+**evrythng-extended.js** works exactly the same way as *evrythng.js*, just with more resources (endpoints). 
+See all Operator permissions in [API key permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#permissions) 
+and the usage examples in [*evrythng.js* documentation](https://github.com/evrythng/evrythng.js#usage).
 
-**Note:** Be sure to only include your EVRYTHNG App API key and **not** your Operator or App User key in any public application code (read more [here](https://dashboard.evrythng.com/developers/apidoc#appusers)).
+**Note:** **DO NOT include your Operator API Key in any public code**. This includes committing to any 
+public repositories (GitHub, BitBucket, etc.). If you have done so, you can reset your key in your 
+[Account settings](https://dashboard.evrythng.com/account) page.
 
-### Node.js
+For advanced usage and options, see [Documentation](#documentation) below.
+
+#### Node.js
 
 ```javascript 
 var EVT = require('evrythng-extended');
 
 // Initialise Operator Scope
-// **DO NOT include your Operator API Key in any public code**, this includes committing to any public repositories (GitHub, BitBucket, etc.)!
 var operator = new EVT.Operator(OPERATOR_API_KEY);
-
-// Initialise Application Scope, passing the Operator Scope as parent
-var app = new EVT.App('appApiKey', operator);
 ...
 ```
 
-### Browsers
-
-**Note**: most web apps will not need the extended features and should only use the basic version of [**evrythng.js**](https://github.com/evrythng/evrythng.js).
-
-### With RequireJS (AMD)
+#### RequireJS (AMD)
 
 ```javascript
-var bowerPath = '../bower_components/'; // replace with path to your local bower directory
 requirejs.config({
-    paths: {
-        evrythng: bowerPath + 'evrythng-extended/dist/evrythng-extended'
-    }
+  paths: {
+    'evrythng-extended': '../bower_components/evrythng-extended/dist/evrythng-extended'
+  }
 });
     
-require(['evrythng'], function (EVT) {
+require(['evrythng-extended'], function (EVT) {
 
-  var app = new EVT.App('apiKey');
+  var operator = new EVT.Operator(OPERATOR_API_KEY);
   ...
 
 });
 ```
 
-### Plain Javascript
+#### Globals
 
 If you aren't using any of the above script loading mechanisms, the EVT module is available
 as a browser global:
 
 ```javascript
-var app = new EVT.App('apiKey');
+var operator = new EVT.Operator('apiKey');
 ...
 ```
 
-## What's included
+## Examples 
 
-All features of **evrythng.js** are available without changes.
+#### General
 
-Features available only in **evrythng-extended.js**:
-1. Work in account context (as an operator):
 ```javascript
-// Initialise Operator Scope using Operator API key
-//    **DO NOT include your Operator API Key in any public code**,
-//    this includes committing to any public repositories (GitHub, BitBucket, etc.)!
-var operator = new EVT.Operator(OPERATOR_API_KEY);
-
-// Read all Thngs in your account
+// Read all thngs in your account (not scoped)
 operator.thng().read().then(function(thngs){
   console.log(thngs);
   
-  // Delete a Thng
+  // Delete a thng
   thngs[0].delete();
 });
-```
 
-2. Use an app as operator 
-```javascript
-// Initialize App Scope using application API key and pass the operator as parent scope
-var app = new EVT.App(APP_API_KEY, operator);
+// Create an action type
+operator.actionType().create({
+  name: '_orderPizza',
+  customFields: {
+    displayname: 'Order Pizza Now!'
+  }
+});
 
-// Use as you would with `evrythng.js`
+// Read Default Redirection a thng
+EVT.api({
+  apiUrl: 'https://tn.gg',
+  url: '/redirections',
+  params: {
+    evrythngId: '12345'
+  },
+  authorization: OPERATOR_API_KEY
+}).then(function(redirections){
+  console.log(redirections);
+});
+
+// Get QR code
+EVT.api({
+  apiUrl: 'https://tn.gg',
+  url: '/1234.png',
+  accept: 'image/png'
+});
+
 ...
 ```
-This lets you perform operations that require operator access but limited to a single app and retain the app scope.
+
+---
 
 ## Documentation
 
-The [EVRYTHNG API is documented here](https://dashboard.evrythng.com/developers/apidoc).
+The [EVRYTHNG API](https://dashboard.evrythng.com/developers/apidoc) has *evrythng.js* examples whenever applicable.
+If you'd like to see what's going on under the hood, check out the [Annotated Source](http://evrythng.github.io/evrythng-source.js).
+
+## Source Maps
+
+Source Maps are available, which means that when using the minified version, if you open 
+Developer Tools (Chrome, Safari, Firefox), *.map* files will be downloaded to help you debug code using the 
+original uncompressed version of the library.
+
+## Related tools
+
+#### evrythng.js
+
+[`evrythng.js`](https://github.com/evrythng/evrythng.js) is the core version of *evrythng.js* intended to be used in 
+public applications and/or devices.
+
+#### evrythng-mqtt.js
+
+[`evrythng-mqtt`](https://www.npmjs.com/package/evrythng-mqtt) is an *evrythng.js* plugin for Node.js that adds support
+for real-time MQTT methods to any resource.
+
+#### evrythng-hub.js
+
+[`evrythng-hub`](https://github.com/evrythng/evrythng-hub.js) is an *evrythng.js* plugin for both Browser and Node.js that
+adds smart routing of local requests when in the context of a Thng-Hub Gateway.
+
+#### scanthng.js
+
+[`scanthng.js`](https://github.com/evrythng/scanthng.js) is a separate library that lets you identify Products and Thngs
+right from your browser, without using a standalone QR Code scanning app. It also supports 
+[Image Recognition](https://dashboard.evrythng.com/developers/quickstart/image-recognition).
 
 ## License
 
