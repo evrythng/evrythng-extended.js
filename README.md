@@ -5,7 +5,7 @@ that adds Operator administrative capabilities (read about
 [Scope and Permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#operator-permissions)). This means you need
 your Account Operator API key, which you can find in your [Account settings](https://dashboard.evrythng.com/account) page.
 
-**evrythng.js** can be used both in Web applications (Browser) and embedded/server applications using Node.js. The
+**evrythng-extended.js** can be used both in Web applications (Browser) and embedded/server applications using Node.js. The
 difference being the transport layer - Browser's XHR vs Node's HTTP.
 
 > **evrythng-extended.js** is intended for administrative operations only - the same sort of actions you would do on 
