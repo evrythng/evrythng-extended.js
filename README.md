@@ -19,7 +19,7 @@ You can use it in a server-side application or if you dynamically retrieve the O
 
 ### Node.js
 
-    npm install evrythng-extended --save-dev
+    npm install evrythng-extended --save
 
 ### Browsers
 
@@ -28,7 +28,7 @@ You can use it in a server-side application or if you dynamically retrieve the O
 
 ##### With [Bower](http://bower.io/)
 
-    bower install evrythng-extended --save-dev
+    bower install evrythng-extended --save
     
 The Bower package is [AMD](http://requirejs.org/docs/whyamd.html)-compatible. This means you can load 
 it asynchronously using tools like [Require.js](http://requirejs.org/) or simply dropping the script tag 
