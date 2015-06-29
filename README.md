@@ -164,6 +164,12 @@ original uncompressed version of the library.
 
 ## Related tools
 
+#### scanthng.js
+
+[`scanthng.js`](https://github.com/evrythng/scanthng.js) is a library that lets you identify Products and Thngs
+right from your browser, without using a standalone QR Code scanning app. It also supports 
+[Image Recognition](https://dashboard.evrythng.com/developers/quickstart/image-recognition).
+
 #### evrythng.js
 
 [`evrythng.js`](https://github.com/evrythng/evrythng.js) is the core version of *evrythng.js* intended to be used in 
@@ -178,12 +184,6 @@ for real-time MQTT methods to any resource.
 
 [`evrythng-hub`](https://github.com/evrythng/evrythng-hub.js) is an *evrythng.js* plugin for both Browser and Node.js that
 adds smart routing of local requests when in the context of a Thng-Hub Gateway.
-
-#### scanthng.js
-
-[`scanthng.js`](https://github.com/evrythng/scanthng.js) is a separate library that lets you identify Products and Thngs
-right from your browser, without using a standalone QR Code scanning app. It also supports 
-[Image Recognition](https://dashboard.evrythng.com/developers/quickstart/image-recognition).
 
 ## License
 
