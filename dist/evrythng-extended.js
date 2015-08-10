@@ -1,5 +1,5 @@
-// EVRYTHNG JS SDK v3.1.2
-// (c) 2012-2015 EVRYTHNG Ltd. London / New York / Zurich.
+// EVRYTHNG JS SDK v3.2.0
+// (c) 2012-2015 EVRYTHNG Ltd. London / New York / San Francisco.
 // Released under the Apache Software License, Version 2.0.
 // For all details and usage:
 // https://github.com/evrythng/evrythng.js
@@ -969,7 +969,7 @@ define('core',[
   'use strict';
 
   // Version is updated from package.json using `grunt-version` on build.
-  var version = '3.1.2';
+  var version = '3.2.0';
 
 
   // Setup default settings:
@@ -1041,14 +1041,17 @@ define('core',[
     // Use the passed plugin features by requiring its dependencies and installing it.
     use: function (plugin, callback){
       if (Utils.isObject(plugin) && Utils.isFunction(plugin.install)) {
-        require(plugin.requires || [], function () {
-          plugin.install.apply(plugin, arguments);
+        var installArgs = [];
 
-          // Call callback if specified
-          if(callback && Utils.isFunction(callback)){
-            callback();
-          }
-        });
+        // Inject plugin dependencies as requested, using the synchronous
+        // require API for Require.js and Almond.js.
+        if(plugin.$inject){
+          plugin.$inject.forEach(function (dependency) {
+            installArgs.push(require(dependency));
+          });
+        }
+
+        plugin.install.apply(plugin, installArgs);
 
         return this;
       } else {
@@ -1740,8 +1743,8 @@ define('resource',[
 
   // Any resource create in a scope will inherit these methods. However, it
   // is possible to add custom methods to a resource in a custom Entity
-  // *resourceConstructor* (e.g. refer to the [`entity/appUser` doc](entity/appUser.html),
-  // where a *.validate()* method is added to every AppUser resource).
+  // *resourceConstructor* (e.g. refer to the [`entity/user` doc](entity/user.html),
+  // where a *.validate()* method is added to every User resource).
 
   // **Remember that all CRUD methods forward to `EVT.api()` which returns a Promise.**
 
@@ -2200,6 +2203,8 @@ define('entity/property',[
 
   return {
 
+    'class': Property,
+
     resourceConstructor: function (property) {
 
       if(!this.resource) {
@@ -2319,6 +2324,8 @@ define('entity/action',[
   // - _**product.action('scans', '1')**: creates path '/product/<id>/actions/scans/1'_
   return {
 
+    'class': Action,
+
     resourceConstructor: function (actionType, id) {
       var path, resource,
         context = this,
@@ -2426,27 +2433,30 @@ define('entity/product',[
 
 
   return {
+
+    'class': Product,
+
     resourceConstructor: Resource.constructorFactory('/products', EVT.Entity.Product, ['property', 'action'])
+
   };
 });
 
-// ## APPUSER.JS
+// ## USER.JS
 
-// **The App User entity represents the app users stored in the Engine.
+// **The User entity represents the app users stored in the Engine.
 // It inherits from Entity and adds a new resource's *validate()* method,
 // as well as a *self.validate()* to allow to validate users.**
 
-define('entity/appUser',[
+define('entity/user',[
   'core',
   './entity',
   'resource',
-  'utils',
-  'connect'
+  'utils'
 ], function (EVT, Entity, Resource, Utils) {
   'use strict';
 
-  // Setup AppUser inheritance from Entity.
-  var AppUser = function (objData) {
+  // Setup User inheritance from Entity.
+  var User = function (objData) {
 
     // Rename user object argument's *evrythngUser* property to
     // entity-standard-*id*.
@@ -2460,11 +2470,11 @@ define('entity/appUser',[
     Entity.apply(this, args);
   };
 
-  AppUser.prototype = Object.create(Entity.prototype);
-  AppUser.prototype.constructor = AppUser;
+  User.prototype = Object.create(Entity.prototype);
+  User.prototype.constructor = User;
 
   // The validate method sends a `POST` request to the validate
-  // endpoint of a new user. This is only valid when the AppUser
+  // endpoint of a new user. This is only valid when the User
   // resource path is *'/auth/evrythng/users/1'*.
   function validate(activationCode) {
 
@@ -2511,19 +2521,17 @@ define('entity/appUser',[
       authorization: this.scope.apiKey
     }).then(function (access) {
         // Create User Scope
-        var user = new EVT.User({
+        return new EVT.User({
           id: access.evrythngUser,
           apiKey: access.evrythngApiKey,
           type: 'anonymous'
         }, $this.scope);
-
-        return user;
     });
   }
 
 
-  // Extend AppUser API to allow to validate itself.
-  Utils.extend(AppUser.prototype, {
+  // Extend User API to allow to validate itself.
+  Utils.extend(User.prototype, {
 
     validate: function () {
       return validate.call(this, this.activationCode);
@@ -2533,15 +2541,17 @@ define('entity/appUser',[
 
 
   // Attach class to EVT module.
-  EVT.Entity.AppUser = AppUser;
+  EVT.Entity.User = User;
 
 
-  // The AppUser resource constructor is a custom constructor that
+  // The User resource constructor is a custom constructor that
   // returns the constructor. This allows the path to be variable.
 
   // GET '/users' and GET '/auth/evrythng/users' return the same
   // entity structure but there are access and back-end differences.
   return {
+
+    'class': User,
 
     resourceConstructor: function (customPath) {
 
@@ -2550,7 +2560,7 @@ define('entity/appUser',[
       // Return the factory function.
       return function (id) {
 
-        var resource = Resource.constructorFactory(path, EVT.Entity.AppUser).call(this, id);
+        var resource = Resource.constructorFactory(path, EVT.Entity.User).call(this, id);
 
         // Add *validate()* method to the resource as well
         resource.validate = function () {
@@ -2609,9 +2619,6 @@ define('entity/place',[
   Place.prototype = Object.create(Entity.prototype);
   Place.prototype.constructor = Place;
 
-  // Attach class to EVT module.
-  EVT.Entity.Place = Place;
-
   function _normalizeArguments(args) {
     var data = args[0];
 
@@ -2623,7 +2630,14 @@ define('entity/place',[
 
     return args;
   }
+
+  // Attach class to EVT module.
+  EVT.Entity.Place = Place;
+
   return {
+
+    'class': Place,
+
     resourceConstructor: function (id) {
       var scope = this instanceof Scope ? this : this.resource.scope;
 
@@ -3102,22 +3116,20 @@ define('authentication',[
 // - Action resource (`C`) - Scans only
 // - App User resource (`C`)
 // - Login
-// - (`C` actions via products)
 
 define('scope/application',[
   'core',
   './scope',
-  'resource',
   'entity/product',
   'entity/action',
-  'entity/appUser',
+  'entity/user',
   'entity/place',
   'authentication',
   'social/facebook',
   'utils',
   'logger'
-], function (EVT, Scope, Resource, Product, Action, AppUser,
-             Place, Authentication, Facebook, Utils, Logger) {
+], function (EVT, Scope, Product, Action, User, Place, Authentication,
+             Facebook, Utils, Logger) {
   'use strict';
 
   // Application Scope constructor. It can be called with the parameters:
@@ -3134,6 +3146,7 @@ define('scope/application',[
     // Setup base Scope with the provided API Key.
     if(Utils.isObject(obj)){
       Scope.call(this, obj.apiKey);
+      Utils.extend(this, obj, true);
     }else{
       Scope.call(this, obj);
     }
@@ -3238,7 +3251,7 @@ define('scope/application',[
 
     // Setup AppUser resource to use *'/auth/evrythng/users'* instead
     // of the default *'/users'*. Both endpoints return a list of User entities.
-    appUser: AppUser.resourceConstructor('/auth/evrythng/users'),
+    appUser: User.resourceConstructor('/auth/evrythng/users'),
 
     place: Place.resourceConstructor,
 
@@ -3248,9 +3261,7 @@ define('scope/application',[
 
 
   // Attach ApplicationScope class to the EVT module.
-  EVT.App = ApplicationScope;
-
-  return EVT;
+  return (EVT.App = ApplicationScope);
 
 });
 
@@ -3321,6 +3332,9 @@ define('entity/location',[
   }
 
   return {
+
+    'class': Location,
+
     resourceConstructor: function () {
       var path = this.resource.path + '/location',
           args = arguments[0] || [];
@@ -3367,6 +3381,7 @@ define('entity/location',[
 
       return resource;
     }
+
   };
 });
 
@@ -3382,8 +3397,7 @@ define('entity/thng',[
   './property',
   './action',
   './location',
-  'utils',
-  'connect'
+  'utils'
 ], function (EVT, Entity, Resource, Property, Action, Location, Utils) {
   'use strict';
 
@@ -3436,7 +3450,11 @@ define('entity/thng',[
 
 
   return {
+
+    'class': Thng,
+
     resourceConstructor: Resource.constructorFactory('/thngs', EVT.Entity.Thng, ['property', 'action', 'location'])
+
   };
 });
 
@@ -3467,6 +3485,9 @@ define('entity/actionType',[
   EVT.Entity.ActionType = ActionType;
 
   return {
+
+    'class': ActionType,
+
     resourceConstructor: function () {
       var scope = this instanceof Scope ? this : this.resource.scope;
 
@@ -3538,7 +3559,11 @@ define('entity/collection',[
 
 
   return {
+
+    'class': Collection,
+
     resourceConstructor: Resource.constructorFactory('/collections', EVT.Entity.Collection, ['thng', 'action'])
+
   };
 });
 
@@ -3568,7 +3593,11 @@ define('entity/multimedia',[
 
 
   return {
+
+    'class': Multimedia,
+
     resourceConstructor: Resource.constructorFactory('/contents/multimedia', EVT.Entity.Multimedia)
+
   };
 });
 
@@ -3668,7 +3697,7 @@ define('scope/user',[
   './scope',
   'entity/product',
   'entity/thng',
-  'entity/appUser',
+  'entity/user',
   'entity/actionType',
   'entity/action',
   'entity/collection',
@@ -3677,7 +3706,7 @@ define('scope/user',[
   'authentication',
   'utils',
   'search'
-], function (EVT, Scope, Product, Thng, AppUser, ActionType, Action, Collection,
+], function (EVT, Scope, Product, Thng, User, ActionType, Action, Collection,
              Multimedia, Place, Authentication, Utils, search) {
   'use strict';
 
@@ -3718,7 +3747,7 @@ define('scope/user',[
   // in the *'/users'* endpoint.
   function update() {
     var $this = this,
-      self = AppUser.resourceConstructor().call(this, this.id);
+      self = User.resourceConstructor().call(this, this.id);
 
     return self.update.apply(self, arguments).then(function (updated) {
       Utils.extend($this, updated, true);
@@ -3758,9 +3787,7 @@ define('scope/user',[
 
 
   // Attach UserScope class to the EVT module.
-  EVT.User = UserScope;
-
-  return EVT;
+  return (EVT.User = UserScope);
 
 });
 
@@ -3859,9 +3886,7 @@ define('scope/device',[
 
 
   // Attach DeviceScope class to the EVT module.
-  EVT.Device = DeviceScope;
-
-  return EVT;
+  return (EVT.Device = DeviceScope);
 
 });
 
@@ -3888,6 +3913,7 @@ define('scope/device',[
 // strict Promises/A+ (1.1) implementation
 
 define('evrythng',[
+  'core',
   'scope/application',
   'scope/user',
   'scope/device'
@@ -3922,7 +3948,7 @@ define('scope/operator',[
   './scope',
   'entity/product',
   'entity/thng',
-  'entity/appUser',
+  'entity/user',
   'entity/actionType',
   'entity/action',
   'entity/collection',
@@ -3931,7 +3957,7 @@ define('scope/operator',[
   'utils',
   'logger',
   'search'
-], function (EVT, Scope, Product, Thng, AppUser, ActionType, Action, Collection,
+], function (EVT, Scope, Product, Thng, User, ActionType, Action, Collection,
              Multimedia, Place, Utils, Logger, search) {
   'use strict';
 
@@ -3979,14 +4005,14 @@ define('scope/operator',[
   // Implement Public API by extending the prototype.
 
   // See explanation of resource constructors in ApplicationScope.
-  // The **appUser()** resource builds a custom resource constructor by using
+  // The **user()** resource builds a custom resource constructor by using
   // the default *'/users'* endpoint (unlike ApplicationScope).
   // Account is read-only so no self update available.
 
   Utils.extend(OperatorScope.prototype, {
 
-    // Setup AppUser resource with default path
-    appUser: AppUser.resourceConstructor(),
+    // Setup User resource with default path
+    user: User.resourceConstructor(),
 
     product: Product.resourceConstructor,
 
@@ -4007,9 +4033,158 @@ define('scope/operator',[
   }, true);
 
   // Attach OperatorScope class to the EVT module.
-  EVT.Operator = OperatorScope;
+  return (EVT.Operator = OperatorScope);
 
-  return EVT;
+});
+
+// ## REACTOR-LOG.JS
+
+// **The ReactorLog Entity maps the reactor logs created by Reactor scripts
+// in the context of an Application and Project.
+// The logs bulk API is different from others, when the input is an array,
+// the endpoint is different.**
+
+define('entity/reactorLog',[
+  'core',
+  './entity',
+  'resource',
+  'utils',
+  'logger'
+], function (EVT, Entity, Resource, Utils, Logger) {
+  'use strict';
+
+  // Setup ReactorLog inheritance from Entity.
+  var ReactorLog = function () {
+    Entity.apply(this, arguments);
+  };
+
+  ReactorLog.prototype = Object.create(Entity.prototype);
+  ReactorLog.prototype.constructor = ReactorLog;
+
+
+  // If the action object is empty (or a callback), generate the
+  // simplest action object that just needs the type of the action,
+  // which can be obtained from the resource's path.
+  function _normalizeArguments(value, options) {
+    var args = arguments;
+
+    if (Utils.isArray(value)) {
+      // Add an options object if it does not exist yet
+      if(!Utils.isObject(options)){
+        args = Array.prototype.slice.call(arguments, 0);
+        args.splice(1, 0, {});
+      }
+    }
+
+    return args;
+  }
+
+
+  // Attach class to EVT module.
+  EVT.Entity.ReactorLog = ReactorLog;
+
+
+  return {
+
+    'class': ReactorLog,
+
+    resourceConstructor: function (id) {
+      if (id) {
+        // Reactor logs cannot be retrieved/updated individually
+        throw new TypeError('IDs not allowed here');
+      }
+
+      if(!this.project || !this.id){
+        Logger.error('Application details are not available! Wait for app.$init promise to ' +
+          'complete or provide them to the EVT.App constructor if they are known ' +
+          '(e.g.: EVT.App({apiKey:\'\', id: \'\', project: \'\'})).');
+      }
+
+      var resource,
+        path = '/projects/' + this.project + '/applications/' + this.id + '/reactorLogs',
+      //scope = this instanceof Scope ? this : this.resource.scope;
+        scope = this;
+
+      // Create a resource constructor dynamically and call it.
+      resource = Resource.constructorFactory(path, ReactorLog).call(scope);
+
+      // Overload ReactorLogs resource *create()* method to send array values
+      // to another endpoint.
+      resource.create = function () {
+
+        var args = _normalizeArguments.apply(this, arguments);
+
+        if (Utils.isArray(args[0])) {
+          args[1].url = this.path + '/bulk';
+        }
+
+        return Resource.prototype.create.apply(this, args);
+      };
+
+      return resource;
+    }
+
+  };
+});
+
+// ## TRUSTED-APPLICATION.JS
+
+// **Here it is defined the TrustedApplicationScope or `EVT.TrustedApp`.
+// EVT.TrustedApp is a sub-class of EVT.App that adds more permissions
+// or resources based on the App Secret Api Key access permissions.**
+
+// A Trusted Application scope currently has access to:
+
+// - Product resource (`R`)
+// - Action resource (`CR`)
+// - App User resource (`C`)
+// - Place resource (`R`)
+// - Thng resource (`RU`)
+// - User resource (`R`)
+// - Login
+
+define('scope/trustedApplication',[
+  'core',
+  './application',
+  'entity/user',
+  'entity/thng',
+  'entity/action',
+  'entity/place',
+  'entity/reactorLog',
+  'utils'
+], function (EVT, ApplicationScope, User, Thng, Action, Place, ReactorLog, Utils) {
+  'use strict';
+
+  // Trusted Application Scope constructor. It can be called with the
+  // same parameters as the parent [Application Scope](application.html).
+  var TrustedApplicationScope = function(){
+
+    // Call super class constructor.
+    ApplicationScope.apply(this, arguments);
+
+  };
+
+  // Setup Application Scope inheritance.
+  TrustedApplicationScope.prototype = Object.create(ApplicationScope.prototype);
+  TrustedApplicationScope.prototype.constructor = TrustedApplicationScope;
+
+
+  // Implement Public API by extending the prototype. In this case we're
+  // extending the resources of the Application Scope.
+  Utils.extend(TrustedApplicationScope.prototype, {
+
+    // Setup User resource with default path
+    user: User.resourceConstructor(),
+
+    thng: Thng.resourceConstructor,
+
+    reactorLog: ReactorLog.resourceConstructor
+
+  }, true);
+
+
+  // Attach TrustedApplicationScope class to the EVT module.
+  return (EVT.TrustedApp = TrustedApplicationScope);
 
 });
 
@@ -4018,13 +4193,14 @@ define('scope/operator',[
 // ## EVRYTHNG-EXTENDED.JS
 
 // This specific version of EvrythngJS simply extends the core module by adding the
-// Operator scope (`EVT.Operator`).
+// Operator scope (`EVT.Operator`) and the TrustedApplication scope (`EVT.TrustedApp`).
 
 // See more information of how EvrythngJS is built and bundled in [`evrythng` doc](src/evrythng.html).
 
 define('evrythng-extended',[
   'evrythng',
-  'scope/operator'
+  'scope/operator',
+  'scope/trustedApplication'
 ], function(EVT) {
   'use strict';
 

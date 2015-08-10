@@ -42,7 +42,7 @@ See [Usage](#usage) below for more details.
 
 Add the script tag into your HTML page:
 
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-3.1.2.min.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-3.2.0.min.js"></script>
  
 Or always get the last release:
 
@@ -51,17 +51,15 @@ Or always get the last release:
     
 For HTTPS you need to use:
 
-    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-3.1.2.min.js"></script>
-
-Respectively:
-
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-3.2.0.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
 
 ## Usage
 
 **evrythng-extended.js** works exactly the same way as *evrythng.js*, just with more resources (endpoints). 
 See all Operator permissions in [API key permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#permissions) 
-and the usage examples in [*evrythng.js* documentation](https://github.com/evrythng/evrythng.js#usage).
+and the usage examples in [*evrythng.js* documentation](https://github.com/evrythng/evrythng.js#examples).
 
 **Note:** **DO NOT include your Operator API Key in any public code**. This includes committing to any 
 public repositories (GitHub, BitBucket, etc.). If you have done so, you can reset your key in your 
@@ -99,10 +97,10 @@ require(['evrythng-extended'], function (EVT) {
 #### Globals
 
 If you aren't using any of the above script loading mechanisms, the EVT module is available
-as a browser global:
+as a browser global (`EVT`):
 
 ```javascript
-var operator = new EVT.Operator('apiKey');
+var operator = new EVT.Operator(OPERATOR_API_KEY);
 ...
 ```
 
@@ -164,16 +162,16 @@ original uncompressed version of the library.
 
 ## Related tools
 
-#### scanthng.js
-
-[`scanthng.js`](https://github.com/evrythng/scanthng.js) is a library that lets you identify Products and Thngs
-right from your browser, without using a standalone QR Code scanning app. It also supports 
-[Image Recognition](https://dashboard.evrythng.com/developers/quickstart/image-recognition).
-
 #### evrythng.js
 
 [`evrythng.js`](https://github.com/evrythng/evrythng.js) is the core version of *evrythng.js* intended to be used in 
 public applications and/or devices.
+
+#### evrythng-scan.js
+
+[`evrythng-scan.js`](https://github.com/evrythng/evrythng-scan.js) is an *evrythng.js* plugin that lets you identify 
+Products and Thngs right from your browser, without using a standalone QR Code scanning app. It also supports 
+[Image Recognition](https://dashboard.evrythng.com/developers/quickstart/image-recognition).
 
 #### evrythng-mqtt.js
 
