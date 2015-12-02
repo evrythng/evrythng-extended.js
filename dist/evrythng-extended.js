@@ -1,4 +1,4 @@
-// EVRYTHNG JS SDK v3.3.2
+// EVRYTHNG JS SDK v3.4.0
 // (c) 2012-2015 EVRYTHNG Ltd. London / New York / San Francisco.
 // Released under the Apache Software License, Version 2.0.
 // For all details and usage:
@@ -990,7 +990,7 @@ define('core',[
   'use strict';
 
   // Version is updated from package.json using `grunt-version` on build.
-  var version = '3.3.2';
+  var version = '3.4.0';
 
 
   // Setup default settings:
@@ -1010,7 +1010,6 @@ define('core',[
 
   // - _**quiet**: Boolean - set to true if you don't want EVT.js to write anything to the console_
   // - _**geolocation**: Boolean - set to true to ask for Geolocation when needed_
-  // (e.g. thng.product is an EVT.Entity.Product instead of string id)_
   // - _**interceptors**: Array - each interceptor implements 'request' and/or 'response' functions
   // that run before or after each HTTP call:_
 
@@ -1028,7 +1027,7 @@ define('core',[
   // ```
 
   // - _**timeout**: Integer - set the request timeout, in ms_
-  // - _**apiKey**: String - set the authorization API key used for all raw requests
+  // - _**apiKey**: String - set the authorization API key used for all raw requests_
   var defaultSettings = {
     apiUrl: 'https://api.evrythng.com',
     fullResponse: false,
@@ -1859,6 +1858,13 @@ define('entity/action',[
     return ret;
   }
 
+  // Use HTML5 geolocation if explicitly defined in the options
+  // or set in the global settings.
+  function _useBrowserGeolocation(options) {
+    return (options && options.geolocation !== undefined)?
+      options.geolocation : EVT.settings.geolocation;
+  }
+
 
   // Attach class to EVT module.
   EVT.Entity.Action = Action;
@@ -1907,7 +1913,7 @@ define('entity/action',[
 
         // If geolocation setting is turned on, get current position before
         // registering the action in the Engine.
-        if (EVT.settings.geolocation) {
+        if (_useBrowserGeolocation(args[1])) {
 
           return Utils.getCurrentPosition().then(function (position) {
 
@@ -4003,6 +4009,197 @@ define('evrythng',[
 
 });
 
+// ## REACTOR-LOG.JS
+
+// **The ReactorLog Entity maps the reactor logs created by Reactor scripts
+// in the context of an Application and Project.
+// The logs bulk API is different from others, when the input is an array,
+// the endpoint is different.**
+
+define('entity/reactorLog',[
+  'core',
+  './entity',
+  'resource',
+  'scope/scope',
+  'utils',
+  'logger'
+], function (EVT, Entity, Resource, Scope, Utils, Logger) {
+  'use strict';
+
+  // Setup ReactorLog inheritance from Entity.
+  var ReactorLog = function () {
+    Entity.apply(this, arguments);
+  };
+
+  ReactorLog.prototype = Object.create(Entity.prototype);
+  ReactorLog.prototype.constructor = ReactorLog;
+
+
+  // If the action object is empty (or a callback), generate the
+  // simplest action object that just needs the type of the action,
+  // which can be obtained from the resource's path.
+  function _normalizeArguments(value, options) {
+    var args = arguments;
+
+    if (Utils.isArray(value)) {
+      // Add an options object if it does not exist yet
+      if(!Utils.isObject(options)){
+        args = Array.prototype.slice.call(arguments, 0);
+        args.splice(1, 0, {});
+      }
+    }
+
+    return args;
+  }
+
+
+  // Attach class to EVT module.
+  EVT.Entity.ReactorLog = ReactorLog;
+
+
+  return {
+
+    'class': ReactorLog,
+
+    resourceConstructor: function (id) {
+      if (id) {
+        // Reactor logs cannot be retrieved/updated individually
+        throw new TypeError('IDs not allowed here');
+      }
+
+      var hasResource = !(this instanceof Scope);
+
+      if (!hasResource && (!this.project || !this.id)) {
+        Logger.error('Application details are not available! Wait for app.$init promise to ' +
+          'complete or provide them to the EVT.App constructor if they are known ' +
+          '(e.g.: EVT.App({apiKey:\'\', id: \'\', project: \'\'})).');
+      }
+
+      var scope = hasResource ? this.resource.scope : this,
+        path, resource;
+
+      if (hasResource) {
+        path = this.resource.path + '/reactorLogs';
+      } else {
+        path = '/projects/' + this.project + '/applications/' + this.id + '/reactorLogs';
+      }
+
+      // Create a resource constructor dynamically and call it.
+      resource = Resource.constructorFactory(path, ReactorLog).call(scope);
+
+      // Overload ReactorLogs resource *create()* method to send array values
+      // to another endpoint.
+      resource.create = function () {
+
+        var args = _normalizeArguments.apply(this, arguments);
+
+        if (Utils.isArray(args[0])) {
+          args[1].url = this.path + '/bulk';
+        }
+
+        return Resource.prototype.create.apply(this, args);
+      };
+
+      return resource;
+    }
+
+  };
+});
+
+// ## APPLICATION.JS
+
+// Application is a nested resource for Project.
+define('entity/application',[
+  'core',
+  './entity',
+  './reactorLog',
+  'resource',
+  'utils'
+], function (EVT, Entity, ReactorLog, Resource, Utils) {
+  'use strict';
+
+  // Setup Application inheritance from Entity.
+  var Application = function () {
+    Entity.apply(this, arguments);
+  };
+
+  Application.prototype = Object.create(Entity.prototype);
+  Application.prototype.constructor = Application;
+
+  // Attach class to EVT module.
+  EVT.Entity.Application = Application;
+
+  // Extend Application API by exposing ReactorLog Resource.
+  Utils.extend(Application.prototype, {
+
+    reactorLog: ReactorLog.resourceConstructor
+
+  }, true);
+
+  return {
+
+    'class': Application,
+
+    resourceConstructor: function (id) {
+
+      if (!this.resource) {
+        throw new Error('This Entity does not have a Resource.');
+      }
+
+      var path = this.resource.path + '/applications',
+        scope = this.resource.scope,
+        resource;
+
+      resource = Resource.constructorFactory(path, EVT.Entity.Application, ['reactorLog']).call(scope, id);
+
+      return resource;
+    }
+  };
+});
+
+// ## PROJECT.JS
+
+// **The Project is a simple Entity subclass representing the REST API
+// Project object.**
+define('entity/project',[
+  'core',
+  './entity',
+  './application',
+  'resource',
+  'utils'
+], function (EVT, Entity, Application, Resource, Utils) {
+  'use strict';
+
+  // Setup Project inheritance from Entity.
+  var Project = function () {
+    Entity.apply(this, arguments);
+  };
+
+  Project.prototype = Object.create(Entity.prototype);
+  Project.prototype.constructor = Project;
+
+  // Attach class to EVT module.
+  EVT.Entity.Project = Project;
+
+  // Extend Project API by exposing an Application Resource.
+  Utils.extend(Project.prototype, {
+
+    application: Application.resourceConstructor
+
+  }, true);
+
+  return {
+
+    'class': Project,
+
+    resourceConstructor: function (id) {
+      var resource = Resource.constructorFactory('/projects', EVT.Entity.Project, ['application']).call(this, id);
+
+      return resource;
+    }
+  };
+});
+
 // ## OPERATOR.JS
 
 // **Here it is defined the OperatorScope or `EVT.Operator`. EVT.Operator
@@ -4012,6 +4209,7 @@ define('evrythng',[
 // An Operator scope currently has access to:
 
 // - App User resource (`R`)
+// - Project resource (`C`, `R`, `U`, `D`)
 // - Product resource (`C`, `R`, `U`, `D`)
 // - Thng resource (`C`, `R`, `U`, `D`)
 // - ActionType resource (`C`, `R`)
@@ -4024,6 +4222,7 @@ define('evrythng',[
 define('scope/operator',[
   'core',
   './scope',
+  'entity/project',
   'entity/product',
   'entity/thng',
   'entity/user',
@@ -4035,8 +4234,8 @@ define('scope/operator',[
   'utils',
   'logger',
   'search'
-], function (EVT, Scope, Product, Thng, User, ActionType, Action, Collection,
-             Multimedia, Place, Utils, Logger, search) {
+], function (EVT, Scope, Project, Product, Thng, User, ActionType, Action,
+             Collection, Multimedia, Place, Utils, Logger, search) {
   'use strict';
 
   // Operator Scope constructor. It can be called with the parameters:
@@ -4092,6 +4291,8 @@ define('scope/operator',[
     // Setup User resource with default path
     user: User.resourceConstructor(),
 
+    project: Project.resourceConstructor,
+
     product: Product.resourceConstructor,
 
     thng: Thng.resourceConstructor,
@@ -4113,96 +4314,6 @@ define('scope/operator',[
   // Attach OperatorScope class to the EVT module.
   return (EVT.Operator = OperatorScope);
 
-});
-
-// ## REACTOR-LOG.JS
-
-// **The ReactorLog Entity maps the reactor logs created by Reactor scripts
-// in the context of an Application and Project.
-// The logs bulk API is different from others, when the input is an array,
-// the endpoint is different.**
-
-define('entity/reactorLog',[
-  'core',
-  './entity',
-  'resource',
-  'utils',
-  'logger'
-], function (EVT, Entity, Resource, Utils, Logger) {
-  'use strict';
-
-  // Setup ReactorLog inheritance from Entity.
-  var ReactorLog = function () {
-    Entity.apply(this, arguments);
-  };
-
-  ReactorLog.prototype = Object.create(Entity.prototype);
-  ReactorLog.prototype.constructor = ReactorLog;
-
-
-  // If the action object is empty (or a callback), generate the
-  // simplest action object that just needs the type of the action,
-  // which can be obtained from the resource's path.
-  function _normalizeArguments(value, options) {
-    var args = arguments;
-
-    if (Utils.isArray(value)) {
-      // Add an options object if it does not exist yet
-      if(!Utils.isObject(options)){
-        args = Array.prototype.slice.call(arguments, 0);
-        args.splice(1, 0, {});
-      }
-    }
-
-    return args;
-  }
-
-
-  // Attach class to EVT module.
-  EVT.Entity.ReactorLog = ReactorLog;
-
-
-  return {
-
-    'class': ReactorLog,
-
-    resourceConstructor: function (id) {
-      if (id) {
-        // Reactor logs cannot be retrieved/updated individually
-        throw new TypeError('IDs not allowed here');
-      }
-
-      if(!this.project || !this.id){
-        Logger.error('Application details are not available! Wait for app.$init promise to ' +
-          'complete or provide them to the EVT.App constructor if they are known ' +
-          '(e.g.: EVT.App({apiKey:\'\', id: \'\', project: \'\'})).');
-      }
-
-      var resource,
-        path = '/projects/' + this.project + '/applications/' + this.id + '/reactorLogs',
-      //scope = this instanceof Scope ? this : this.resource.scope;
-        scope = this;
-
-      // Create a resource constructor dynamically and call it.
-      resource = Resource.constructorFactory(path, ReactorLog).call(scope);
-
-      // Overload ReactorLogs resource *create()* method to send array values
-      // to another endpoint.
-      resource.create = function () {
-
-        var args = _normalizeArguments.apply(this, arguments);
-
-        if (Utils.isArray(args[0])) {
-          args[1].url = this.path + '/bulk';
-        }
-
-        return Resource.prototype.create.apply(this, args);
-      };
-
-      return resource;
-    }
-
-  };
 });
 
 // ## TRUSTED-APPLICATION.JS
