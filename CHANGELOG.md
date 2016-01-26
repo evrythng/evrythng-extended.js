@@ -1,4 +1,12 @@
+# v3.4.3 (26-01-2016)
+
+## Changes
+
+- **Callback API**: Make deprecation warning mutable
+
 # v3.4.2 (22-12-2015)
+
+## Changes
 
 - **Errors**: Added `code` and `moreInfo` and removed `message` and `type` to/from EVT.js errors.
 - **Callback API**: Added deprecation when callbacks are executed
