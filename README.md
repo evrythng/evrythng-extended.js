@@ -18,6 +18,7 @@ You can use it in a server-side application or if you dynamically retrieve the O
 ## Installation
 
 ### Node.js
+[![NPM](https://nodei.co/npm/evrythng-extended.png?downloads=true)](https://npmjs.org/package/evrythng-extended)
 
     npm install evrythng-extended --save
 
