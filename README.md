@@ -18,7 +18,6 @@ You can use it in a server-side application or if you dynamically retrieve the O
 ## Installation
 
 ### Node.js
-[![NPM](https://nodei.co/npm/evrythng-extended.png?downloads=true)](https://npmjs.org/package/evrythng-extended)
 
     npm install evrythng-extended --save
 
@@ -43,7 +42,7 @@ See [Usage](#usage) below for more details.
 
 Add the script tag into your HTML page:
 
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-3.4.3.min.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-3.4.4.min.js"></script>
  
 Or always get the last release:
 
@@ -52,7 +51,7 @@ Or always get the last release:
     
 For HTTPS you need to use:
 
-    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-3.4.3.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-3.4.4.min.js"></script>
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
 
