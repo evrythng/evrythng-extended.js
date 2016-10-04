@@ -42,7 +42,7 @@ See [Usage](#usage) below for more details.
 
 Add the script tag into your HTML page:
 
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-3.7.0.min.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-4.0.0.min.js"></script>
  
 Or always get the last release:
 
@@ -51,7 +51,7 @@ Or always get the last release:
     
 For HTTPS you need to use:
 
-    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-3.7.0.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-4.0.0.min.js"></script>
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
 
@@ -75,6 +75,10 @@ var EVT = require('evrythng-extended');
 // Initialise Operator Scope
 var operator = new EVT.Operator(OPERATOR_API_KEY);
 ...
+
+// Or with Trusted App Scope
+var app = new EVT.TrustedApp(TRUSTED_APP_API_KEY);
+
 ```
 
 #### RequireJS (AMD)
@@ -108,24 +112,31 @@ var operator = new EVT.Operator(OPERATOR_API_KEY);
 
 #### General
 
+Read all Thngs in your account (not scoped):
+
 ```javascript
-// Read all thngs in your account (not scoped)
 operator.thng().read().then(function(thngs){
   console.log(thngs);
   
-  // Delete a thng
+  // Delete a Thng
   thngs[0].delete();
 });
+```
 
-// Create an action type
+Create an action type:
+
+```javascript
 operator.actionType().create({
   name: '_orderPizza',
   customFields: {
     displayname: 'Order Pizza Now!'
   }
 });
+```
 
-// Read Default Redirection a thng
+Read default redirection of a Thng:
+
+```javascript
 EVT.api({
   apiUrl: 'https://tn.gg',
   url: '/redirections',
@@ -136,8 +147,11 @@ EVT.api({
 }).then(function(redirections){
   console.log(redirections);
 });
+```
 
-// Get QR code
+Get QR code: 
+
+```javascript
 EVT.api({
   apiUrl: 'https://tn.gg',
   url: '/1234.png',
@@ -145,8 +159,6 @@ EVT.api({
     accept: 'image/png'
   }
 });
-
-...
 ```
 
 ---
