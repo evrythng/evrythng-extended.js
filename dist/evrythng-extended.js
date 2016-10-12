@@ -1,4 +1,4 @@
-// EVRYTHNG JS SDK v4.0.1
+// EVRYTHNG JS SDK v4.1.0
 // (c) 2012-2016 EVRYTHNG Ltd. London / New York / San Francisco.
 // Released under the Apache Software License, Version 2.0.
 // For all details and usage:
@@ -1723,7 +1723,7 @@ define('core',[
   'use strict';
 
   // Version is updated from package.json using `grunt-version` on build.
-  var version = '4.0.1';
+  var version = '4.1.0';
 
 
   // Setup default settings:
@@ -4877,6 +4877,50 @@ define('entity/reactorLog',[
   };
 });
 
+// ## STATUS.JS
+
+// Status is a nested resource for ReactorScript.
+define('entity/status',[
+  'core',
+  './entity',
+  'resource',
+  'utils'
+], function (EVT, Entity, Resource, Utils) {
+  'use strict';
+
+  // Setup Status inheritance from Entity.
+  var Status = function () {
+    Entity.apply(this, arguments);
+  };
+
+  Status.prototype = Object.create(Entity.prototype);
+  Status.prototype.constructor = Status;
+
+  // Attach class to EVT module.
+  EVT.Entity.Status = Status;
+
+  return {
+
+    'class': Status,
+
+    resourceConstructor: function (id) {
+      if (id) {
+        // Reactor script status cannot be retrieved individually.
+        throw new TypeError('IDs not allowed here');
+      }
+
+      if (!this.resource) {
+        throw new Error('This Entity does not have a Resource.');
+      }
+
+      var path = this.resource.path + '/status',
+        scope = this.resource.scope;
+
+      return Resource.constructorFactory(path, EVT.Entity.Status).call(scope);
+    }
+  };
+});
+
 // ## REACTOR-SCRIPT.JS
 
 // **The ReactorScript Entity maps to the reactor script API, allowing
@@ -4885,11 +4929,12 @@ define('entity/reactorLog',[
 define('entity/reactorScript',[
   'core',
   './entity',
+  './status',
   'resource',
   'scope/scope',
   'utils',
   'logger'
-], function (EVT, Entity, Resource, Scope, Utils, Logger) {
+], function (EVT, Entity, Status, Resource, Scope, Utils, Logger) {
   'use strict';
 
   // Setup ReactorScript inheritance from Entity.
@@ -4904,6 +4949,12 @@ define('entity/reactorScript',[
   // Attach class to EVT module.
   EVT.Entity.ReactorScript = ReactorScript;
 
+  // Extend ReactorScript API by exposing a Status Resource.
+  Utils.extend(ReactorScript.prototype, {
+
+    status: Status.resourceConstructor
+
+  }, true);
 
   return {
 
@@ -4933,7 +4984,7 @@ define('entity/reactorScript',[
       }
 
       // Create a resource constructor dynamically and call it.
-      resource = Resource.constructorFactory(path, ReactorScript).call(scope);
+      resource = Resource.constructorFactory(path, ReactorScript, ['status']).call(scope);
 
       return resource;
     }
