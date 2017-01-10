@@ -2,7 +2,7 @@
 
 **evrythng-extended.js** is an extended version of [*evrythng.js*](https://github.com/evrythng/evrythng.js)
 that adds Operator administrative capabilities (read about
-[Scope and Permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#operator-permissions)). This means you need
+[Scope and Permissions](https://developers.evrythng.com/docs/scope-api-and-permissions)). This means you need
 your Account Operator API key, which you can find in your [Account settings](https://dashboard.evrythng.com/account) page.
 
 **evrythng-extended.js** can be used both in Web applications (Browser) and embedded/server applications using Node.js. The
@@ -10,7 +10,7 @@ difference being the transport layer - Browser's XHR vs Node's HTTP.
 
 > **evrythng-extended.js** is intended for administrative operations only - the same sort of actions you would do on 
 the [EVRYTHNG Dashboard](https://dashboard.evrythng.com). Be sure to **never** include your EVRYTHNG **Operator API key** 
-in any public source code (read more about [Scope Permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#permissions)).
+in any public source code (read more about [Scope Permissions](https://developers.evrythng.com/docs/scope-api-and-permissions)).
 You can use it in a server-side application or if you dynamically retrieve the Operator API key from a server call.
 
 > See [Related Tools](#related-tools) below for other usages.
@@ -42,7 +42,7 @@ See [Usage](#usage) below for more details.
 
 Add the script tag into your HTML page:
 
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-4.1.0.min.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-extended-4.2.0.min.js"></script>
  
 Or always get the last release:
 
@@ -51,14 +51,14 @@ Or always get the last release:
     
 For HTTPS you need to use:
 
-    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-4.1.0.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended-4.2.0.min.js"></script>
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.js"></script>
     <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-extended.min.js"></script>
 
 ## Usage
 
 **evrythng-extended.js** works exactly the same way as *evrythng.js*, just with more resources (endpoints). 
-See all Operator permissions in [API key permissions](https://dashboard.evrythng.com/developers/apidoc/scopes#permissions) 
+See all Operator permissions in [API key permissions](https://developers.evrythng.com/docs/scope-api-and-permissions) 
 and the usage examples in [*evrythng.js* documentation](https://github.com/evrythng/evrythng.js#examples).
 
 **Note:** **DO NOT include your Operator API Key in any public code**. This includes committing to any 
@@ -165,7 +165,7 @@ EVT.api({
 
 ## Documentation
 
-The [EVRYTHNG API](https://dashboard.evrythng.com/developers/apidoc) has *evrythng.js* examples whenever applicable.
+The [EVRYTHNG API](https://developers.evrythng.com/docs/api-overview) has *evrythng.js* examples whenever applicable.
 If you'd like to see what's going on under the hood, check out the [Annotated Source](http://evrythng.github.io/evrythng-source.js).
 
 ## Source Maps
