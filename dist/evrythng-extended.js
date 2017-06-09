@@ -1,4 +1,4 @@
-// EVRYTHNG JS SDK v4.5.1
+// EVRYTHNG JS SDK v4.6.0
 // (c) 2012-2017 EVRYTHNG Ltd. London / New York / San Francisco.
 // Released under the Apache Software License, Version 2.0.
 // For all details and usage:
@@ -1733,7 +1733,7 @@ define('core',[
   'use strict';
 
   // Version is updated from package.json using `grunt-version` on build.
-  var version = '4.5.1';
+  var version = '4.6.0';
 
 
   // Setup default settings:
@@ -5422,6 +5422,36 @@ define('entity/file',[
   };
 });
 
+// ## SCHEMA.JS
+
+// **Schema defines a JSON Schema that is applied to a defined resource type.
+// Schemas are associated with Roles (both Application User Roles and Operator
+// Roles).**
+
+define('entity/schema',[
+  'core',
+  './entity',
+  'resource'
+], function (EVT, Entity, Resource) {
+  'use strict';
+
+  // Setup Schema inheritance from Entity.
+  var Schema = function () {
+    Entity.apply(this, arguments);
+  };
+
+  Schema.prototype = Object.create(Entity.prototype);
+  Schema.prototype.constructor = Schema;
+
+  // Attach class to EVT module.
+  EVT.Entity.Schema = Schema;
+
+  return {
+    'class': Schema,
+    resourceConstructor: Resource.constructorFactory('/schemas', EVT.Entity.Schema)
+  };
+});
+
 // ## OPERATOR.JS
 
 // **Here it is defined the OperatorScope or `EVT.Operator`. EVT.Operator
@@ -5440,6 +5470,7 @@ define('entity/file',[
 // - Batch resource (`C`, `R`, `U`, `D`)
 // - File resource (`C`, `R`, `D`)
 // - Role resource (`C`, `R`, `U`, `D`)
+// - Schema resource (`C`, `R`, `U`, `D`)
 // - (`C`, `R`, `U`, `D` actions via products/thngs)
 
 define('scope/operator',[
@@ -5456,10 +5487,11 @@ define('scope/operator',[
   'entity/place',
   'entity/file',
   'entity/role',
+  'entity/schema',
   'utils',
   'logger'
 ], function (EVT, Scope, Project, Product, Thng, User, ActionType, Action,
-             Collection, Batch, Place, File, Role, Utils, Logger) {
+             Collection, Batch, Place, File, Role, Schema, Utils, Logger) {
   'use strict';
 
   // Operator Scope constructor. It can be called with the parameters:
@@ -5535,7 +5567,9 @@ define('scope/operator',[
 
     file: File.resourceConstructor,
 
-    role: Role.resourceConstructor
+    role: Role.resourceConstructor,
+
+    schema: Schema.resourceConstructor
 
   }, true);
 
