@@ -1,6 +1,6 @@
 {
   "name": "evrythng-extended",
-  "version": "4.6.0",
+  "version": "4.7.0",
   "main": "lib/evrythng-extended.js",
   "description": "Javascript SDK to communicate with EVRYTHNG REST API",
   "repository": {
